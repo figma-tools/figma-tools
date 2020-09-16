@@ -1776,6 +1776,11 @@ capture-exit@^2.0.0:
   dependencies:
     rsvp "^4.8.4"
 
+case-anything@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/case-anything/-/case-anything-1.1.2.tgz#8f0d1903758adaed83e895cc08ba8402d5d76d4c"
+  integrity sha512-rPRbQJ5amW9wKZTlRHErLBZwWr4mWO6WhTkrlLp0XdI/i4JrhLv2wahg5jgmn5Rm2fOUjlmMz6DUH4mnUfWkow==
+
 caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
@@ -4618,11 +4623,6 @@ pascalcase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
   integrity sha1-s2PlXoAGym/iF4TS2yK9FdeRfxQ=
-
-pascalcase@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-1.0.0.tgz#d2fd7d73f2969606d2b56e17f5261be41c43c381"
-  integrity sha512-BSExi0rRnCHReJys6NocaK+cfTXNinAegfWBvr0JD3hiaEG7Nuc7r0CIdOJunXrs8gU/sbHQ9dxVAtiVQisjmg==
 
 path-exists@^3.0.0:
   version "3.0.0"

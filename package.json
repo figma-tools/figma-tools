@@ -23,7 +23,7 @@
     "ora": "^5.1.0"
   },
   "devDependencies": {
-    "pascalcase": "^1.0.0",
+    "case-anything": "^1.1.2",
     "svg-to-jsx": "^1.0.2",
     "svgson": "^4.1.0",
     "tsdx": "^0.13.3",
