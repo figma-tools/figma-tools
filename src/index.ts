@@ -110,11 +110,11 @@ export async function fetchFileImages({
         const imageBuffers = imageSources
           .map(image =>
             format === 'svg'
-              ? Buffer.from(incrementFilterId((image as any).toString()))
+              ? Buffer.from(incrementFilterId(image.toString()))
               : image
           )
           .reduce(
-            (collection: object, image, index) => ({
+            (collection: Record<string, Buffer>, image, index) => ({
               ...collection,
               [ids[index]]: image,
             }),
