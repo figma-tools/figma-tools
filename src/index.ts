@@ -1,19 +1,18 @@
-#!/usr/bin/env node
 import Figma from 'figma-js'
 import { processFile } from 'figma-transformer'
 import chunk from 'chunk'
-import dotenv from 'dotenv'
-import fs from 'fs'
 import https from 'https'
-import path from 'path'
 import ora from 'ora'
 
-dotenv.config()
+const MAX_CHUNK_SIZE = 1000
+let filterId = -1
+let client = null
 
-const config = {
-  fileId: 'E6didZF0rpPf8piANHABDZ',
-  pages: ['Filled'],
-  format: 'png',
+function getClient() {
+  if (client === null) {
+    client = Figma.Client({ personalAccessToken: process.env.FIGMA_TOKEN })
+  }
+  return client
 }
 
 function getImageFromSource(url) {
@@ -30,55 +29,6 @@ function getImageFromSource(url) {
   })
 }
 
-const MAX_SIZE = 1000
-let client = null
-let filterId = -1
-
-function sourceFileImages({ ids, ...options }) {
-  const chunkSize = Math.round(ids.length / Math.ceil(ids.length / MAX_SIZE))
-  let spinner = ora('Fetching sources').start()
-  return Promise.all(
-    chunk(ids, chunkSize).map(chunkIds =>
-      client.fileImages(config.fileId, {
-        ids: chunkIds,
-        ...options,
-      })
-    )
-  )
-    .then(chunks =>
-      chunks.reduce(
-        (collected: object, { data: { images } }) => ({
-          ...collected,
-          ...images,
-        }),
-        {}
-      )
-    )
-    .then(images => {
-      spinner.text = 'Fetched sources'
-      spinner.succeed()
-      spinner = ora('Fetching images').start()
-      return Promise.all(ids.map(key => images[key]).map(getImageFromSource))
-    })
-    .then(images => {
-      spinner.text = 'Fetched images'
-      spinner.succeed()
-      return images
-        .map(image =>
-          config.format === 'svg'
-            ? Buffer.from(incrementFilterId(image.toString()))
-            : image
-        )
-        .reduce(
-          (collection: object, image, index) => ({
-            ...collection,
-            [ids[index]]: image,
-          }),
-          {}
-        )
-    })
-}
-
 function replaceValue(_, start, middle, end) {
   return `${start}${filterId}_${middle}${end}`
 }
@@ -90,31 +40,87 @@ function incrementFilterId(str) {
     .replace(/(<filter id=")([\s\S]*?)(" [\s\S]*?>)/g, replaceValue)
 }
 
-if (!process.env.FIGMA_TOKEN) {
-  console.error('You must define a FIGMA_TOKEN environment variable.')
-  process.exit(1)
-} else {
-  client = Figma.Client({ personalAccessToken: process.env.FIGMA_TOKEN })
-  client.file(config.fileId).then(({ data }) => {
+export function fetchFileImages({ fileId, pages, format }) {
+  return new Promise(async resolve => {
+    const { data } = await getClient().file(fileId)
     const file = processFile(data)
-    file.shortcuts.pages.forEach(page => {
-      if (config.pages.includes(page.name)) {
-        const componentIds = page.shortcuts.components
-          .map(component => component.id)
-          .slice(0, 2)
-        sourceFileImages({
-          ids: componentIds,
-          format: config.format,
-          svg_include_id: true,
-        }).then(images => {
-          Object.entries(images).map(([key, value]) => {
-            const name = page.shortcuts.components.find(
+    const images = await Promise.all(
+      file.shortcuts.pages
+        .filter(page => {
+          if (pages) {
+            const includePage = pages.includes(page.name)
+            if (
+              includePage &&
+              (!page.shortcuts || !page.shortcuts.components)
+            ) {
+              console.log(`No components found in "${page.name}" page.`)
+              return false
+            }
+            return includePage
+          } else {
+            return true
+          }
+        })
+        .map(async page => {
+          const ids = page.shortcuts.components
+            .map(component => component.id)
+            .slice(0, 2)
+          console.log(ids)
+          const chunkSize = Math.round(
+            ids.length / Math.ceil(ids.length / MAX_CHUNK_SIZE)
+          )
+
+          let spinner = ora('Fetching sources').start()
+          const imageChunks = await Promise.all(
+            chunk(ids, chunkSize).map(chunkIds =>
+              getClient().fileImages(fileId, {
+                ids: chunkIds,
+                svg_include_id: true,
+                format,
+              })
+            )
+          )
+          const flatImages = imageChunks.reduce(
+            (collected: object, { data: { images } }) => ({
+              ...collected,
+              ...images,
+            }),
+            {}
+          )
+
+          spinner.text = 'Fetched sources'
+          spinner.succeed()
+          spinner = ora('Fetching images').start()
+
+          const imageSources = await Promise.all(
+            ids.map(key => flatImages[key]).map(getImageFromSource)
+          )
+
+          spinner.text = 'Fetched images'
+          spinner.succeed()
+
+          const imageBuffers = imageSources
+            .map(image =>
+              format === 'svg'
+                ? Buffer.from(incrementFilterId((image as any).toString()))
+                : image
+            )
+            .reduce(
+              (collection: object, image, index) => ({
+                ...collection,
+                [ids[index]]: image,
+              }),
+              {}
+            )
+
+          return Object.entries(imageBuffers).map(([key, buffer]) => {
+            const component = page.shortcuts.components.find(
               component => component.id === key
-            ).name
-            fs.writeFileSync(path.resolve(`${name}.${config.format}`), value)
+            )
+            return { name: component.name, data: buffer }
           })
         })
-      }
-    })
+    )
+    resolve(images)
   })
 }
