@@ -1,4 +1,4 @@
-# Figma Tools
+# 🛠 Figma Tools
 
 Tools to help you programmatically interact with your Figma files.
 
@@ -23,13 +23,13 @@ a `.env` at the root of your project or as an environment variable in order for 
 
 Fetch image assets from a file.
 
-### watchFile (fileId) => Promise<void> (Coming Soon)
+### watchFile (Coming Soon)
 
 Watch a file for changes.
 
-### diffFile (pageA, pageB) => void (Coming Soon)
+### diffFile (Coming Soon)
 
-Determine the changes between two file versions.
+Determine the differences between two files.
 
 ## Usage
 
