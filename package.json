@@ -1,7 +1,7 @@
 {
-  "name": "figma-source",
+  "name": "figma-tools",
   "version": "0.0.0",
-  "description": "Easily sync Figma assets to your codebase.",
+  "description": "Tools to help you programmatically interact with your Figma files.",
   "repository": "https://github.com/souporserious/figsource",
   "author": "Travis Arnold",
   "license": "MIT",
@@ -23,7 +23,10 @@
     "ora": "^5.1.0"
   },
   "devDependencies": {
+    "body-parser": "^1.19.0",
     "case-anything": "^1.1.2",
+    "express": "^4.17.1",
+    "ngrok": "^3.3.0",
     "svg-to-jsx": "^1.0.2",
     "svgson": "^4.1.0",
     "tsdx": "^0.13.3",

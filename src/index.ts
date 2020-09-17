@@ -40,7 +40,7 @@ export type Image = {
   pageName: string
 }
 
-export async function fetchFileImages({
+export async function fetchImages({
   fileId,
   pages,
   format,

@@ -1,120 +1,112 @@
-# Figma Source
+# Figma Tools
 
-Easily source assets from a Figma file.
+Tools to help you programmatically interact with your Figma files.
 
 ## Install
 
 ```
-yarn add figma-source --dev
+yarn add figma-tools --dev
 ```
 
 ```
-npm install figma-source --dev
+npm install figma-tools --dev
 ```
 
 ## Exports
 
-### sourceFileImages
+<em>Please note: you must include a
+<a href="https://www.figma.com/developers/docs#auth-dev-token">personal access token</a> in
+a `.env` at the root of your project or as an environment variable in order for the following functions to work.
+</em>
 
-Responsible for sourcing image assets from your Figma file. You must include a
-[personal access token](https://www.figma.com/developers/docs#auth-dev-token) in
-a `.env` at the root of your project or as an environment variable.
+### fetchImages: ({ fileId, pages, format }) => Promise<Image[]>
 
-#### { fileId, format, size }
+Fetch image assets from a file.
+
+### watchFile (fileId) => Promise<void> (Coming Soon)
+
+Watch a file for changes.
+
+### diffFile (pageA, pageB) => void (Coming Soon)
+
+Determine the changes between two file versions.
 
 ## Usage
 
-Once your token has been set you can now use the function in a Node script. First, we will create an `icons.js` file:
+Once your token has been set you can use any of the provided functions in a Node script. In a simple example, we will create an `icons.js` file:
 
 ```jsx
-import { sourceFileImages } from 'figma-source'
+import { fetchImages } from 'figma-tools'
 
-sourceFileImages({
+fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'jpg',
-  size: 2,
 }).then(images => {
-  // returns image Buffer
+  console.log(images)
 })
 ```
 
-Now we can call our function and source assets from our Figma file 💰:
+Now we can call our function and fetch images from our Figma file 💰:
 
 ```bash
 node icons.js
 ```
 
-This script can hook into a build script or ran whenever you need to refresh your assets.
+It's that easy! This script can hook into a build script or be used in conjunction with the `watchFile` function whenever you need to refresh your assets.
 
 ## Recipes
 
-### Generate PNG, JPG, SVG, or PDF
+### PNG, JPG, SVG, or PDF
 
 ```js
-import { sourceFile } from 'figma-source'
+import { fetchImages } from 'figma-tools'
 
-const FORMAT = 'jpg'
-
-sourceFile({
+fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
-  format: FORMAT,
+  format: 'jpg',
 }).then(svgs => {
   images.forEach(image => {
-    fs.writeFileSync(path.resolve(`${image.name}.${FORMAT}`), image.data)
+    fs.writeFileSync(path.resolve(`${image.name}.jpg`), image.data)
   })
 })
 ```
 
-### Generate React Components
+### React Components
 
 ```js
-import { sourceFile } from 'figma-source'
+import { fetchImages } from 'figma-tools'
 import svgtojsx from 'svg-to-jsx'
 
-const FILE_NAME = 'icons.js'
-
-sourceFile({
+fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'svg',
-}).then(svgs => {
-  Promise.all(svgs.map(svgtojsx))
-    .then(jsx =>
-      svgs
-        .map(
-          (svg, index) => `export const ${pascalcase(svg.name)} = ${jsx[index]}`
-        )
-        .join('\n')
-    )
-    .then(data => {
-      fs.writeFileSync(path.resolve(FILE_NAME), data)
-    })
+}).then(async svgs => {
+  const jsx = Promise.all(svgs.map(svgtojsx))
+  const data = svgs
+    .map((svg, index) => `export const ${pascalcase(svg.name)} = ${jsx[index]}`)
+    .join('\n')
+  fs.writeFileSync(path.resolve('icons.js'), data)
 })
 ```
 
-### Generate JSON File
+### JSON
 
 ```js
-import { sourceFile } from 'figma-source'
+import { fetchImages } from 'figma-tools'
 import { parse } from 'svgson'
 
-const FILE_NAME = 'icons.json'
-
-sourceFile({
+fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'svg',
-}).then(svgs => {
-  Promise.all(svgs.map(parse))
-    .then(json =>
-      svgs.reduce(
-        (data, svg, index) => ({
-          ...data,
-          [svg.name]: json[index],
-        }),
-        {}
-      )
-    )
-    .then(data => {
-      fs.writeFileSync(path.resolve(FILE_NAME), JSON.stringify(data, null, 2))
-    })
+}).then(async svgs => {
+  const json = Promise.all(svgs.map(parse))
+  const data = svgs.reduce(
+    (data, svg, index) => ({
+      ...data,
+      [svg.name]: json[index],
+    }),
+    {}
+  )
+  fs.writeFileSync(path.resolve('icons.json'), JSON.stringify(data, null, 2))
 })
 ```
