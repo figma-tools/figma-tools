@@ -19,9 +19,9 @@ npm install figma-tools --dev
 a `.env` at the root of your project or as an environment variable in order for the following functions to work.
 </em>
 
-### fetchImages: ({ fileId, pages, format }) => Promise<Image[]>
+### fetchImages: ({ fileId, pages, format }) => Promise<Array<{ name, description, buffer, frameName, pageName }>>
 
-Fetch image assets from a file.
+Fetch components in a file and export them as images.
 
 ### watchFile (Coming Soon)
 
@@ -56,7 +56,7 @@ It's that easy! This script can hook into a build script or be used in conjuncti
 
 ## Recipes
 
-### PNG, JPG, SVG, or PDF
+### JPG, PNG, SVG, or PDF
 
 ```js
 const fs = require('fs')
@@ -65,9 +65,9 @@ const { fetchImages } = require('figma-tools')
 fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'jpg',
-}).then(svgs => {
+}).then(images => {
   images.forEach(image => {
-    fs.writeFileSync(path.resolve(`${image.name}.jpg`), image.data)
+    fs.writeFileSync(path.resolve(`${image.name}.jpg`), image.buffer)
   })
 })
 ```
@@ -84,9 +84,11 @@ fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'svg',
 }).then(async svgs => {
-  const jsx = await Promise.all(svgs.map(svgtojsx))
+  const jsx = await Promise.all(svgs.map(svg => svgtojsx(svg.buffer)))
   const data = svgs
-    .map((svg, index) => `export const ${pascalcase(svg.name)} = ${jsx[index]}`)
+    .map((svg, index) => {
+      return `export const ${pascalcase(svg.name)} = () => ${jsx[index]}`
+    })
     .join('\n')
   fs.writeFileSync(path.resolve('icons.js'), data)
 })
@@ -104,7 +106,7 @@ fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'svg',
 }).then(async svgs => {
-  const json = await Promise.all(svgs.map(parse))
+  const json = await Promise.all(svgs.map(svg => parse(svg.buffer.toString())))
   const data = svgs.reduce(
     (data, svg, index) => ({
       ...data,
