@@ -72,7 +72,7 @@ export async function fetchImages({
         }
       })
       .map(async page => {
-        const ids = page.shortcuts.components.map(component => component.id)
+        const ids = Object.keys(data.components)
         const chunkSize = Math.round(
           ids.length / Math.ceil(ids.length / MAX_CHUNK_SIZE)
         )
@@ -96,12 +96,12 @@ export async function fetchImages({
           {}
         )
 
-        spinner.text = `Fetched ${page.name} sources`
+        spinner.text = `Fetched "${page.name}" sources`
         spinner.succeed()
-        spinner = ora(`Fetching ${page.name} images`).start()
+        spinner = ora(`Fetching "${page.name}" images`).start()
 
         const imageSources = await Promise.all(
-          ids.map(key => flatImages[key]).map(getImageFromSource)
+          ids.map(id => flatImages[id]).map(getImageFromSource)
         )
 
         spinner.text = `Fetched ${page.name} images`
@@ -122,18 +122,24 @@ export async function fetchImages({
           )
 
         return Object.entries(imageBuffers).map(([id, buffer]) => {
-          const { name, description } = page.shortcuts.components.find(
-            component => component.id === id
-          )
-          const frame = page.shortcuts.frames.find(frame =>
-            frame.shortcuts.components.some(component => component.id === id)
-          )
+          const { name, description } = data.components[id]
+          const frame =
+            page.shortcuts.frames &&
+            page.shortcuts.frames.find(frame =>
+              frame.shortcuts.components.some(component => component.id === id)
+            )
+          const group =
+            page.shortcuts.groups &&
+            page.shortcuts.groups.find(group =>
+              group.shortcuts.components.some(component => component.id === id)
+            )
           return {
             buffer,
             description,
             name,
-            frameName: frame && frame.name,
             pageName: page.name,
+            frameName: frame && frame.name,
+            groupName: group && group.name,
           }
         })
       })
