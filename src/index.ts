@@ -1,4 +1,4 @@
-import Figma, { ComponentMetadata, exportFormatOptions } from 'figma-js'
+import * as Figma from 'figma-js'
 import { processFile } from 'figma-transformer'
 import chunk from 'chunk'
 import https from 'https'
@@ -34,8 +34,8 @@ function incrementFilterId(str) {
 
 export type Component = {
   id: string
-  name: ComponentMetadata['name']
-  description: ComponentMetadata['description']
+  name: Figma.ComponentMetadata['name']
+  description: Figma.ComponentMetadata['description']
   pageName: string
   frameName: string | null
   groupName: string | null
@@ -45,20 +45,15 @@ export type Image = {
   buffer: Buffer
 } & Component
 
-export async function fetchImages({
-  fileId,
-  filter,
-  format,
-}: {
+export type Options = {
   /** The file id to fetch images from. Located in the URL of the Figma file. */
   fileId: string
 
-  /** The returned image file format. */
-  format: exportFormatOptions
-
   /** Filter images to fetch. Fetches all images if omitted. */
   filter?: (component: Component) => boolean
-}) {
+} & Omit<Figma.FileImageParams, 'ids'>
+
+export async function fetchImages({ fileId, filter, ...options }: Options) {
   const client = Figma.Client({ personalAccessToken: process.env.FIGMA_TOKEN })
   const { data } = await client.file(fileId)
   const file = processFile(data)
@@ -105,7 +100,7 @@ export async function fetchImages({
             client.fileImages(fileId, {
               ids: chunkIds,
               svg_include_id: true,
-              format,
+              ...options,
             })
           )
         )
@@ -131,7 +126,7 @@ export async function fetchImages({
 
         const imageBuffers = imageSources
           .map(image =>
-            format === 'svg'
+            options.format === 'svg'
               ? Buffer.from(incrementFilterId(image.toString()))
               : image
           )
