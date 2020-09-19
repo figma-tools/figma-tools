@@ -11,7 +11,8 @@ dotenv.config()
 fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'svg',
-  pages: ['Filled'],
+  filter: component =>
+    component.pageName === 'Filled' && component.frameName === 'Action',
 }).then(async svgs => {
   const jsx = await Promise.all(svgs.map(svg => svgtojsx(svg.buffer)))
   const data = svgs
@@ -20,5 +21,5 @@ fetchImages({
         `export const ${pascalCase(svg.name)} = () => ${jsx[index]}`
     )
     .join('\n')
-  fs.writeFileSync(path.resolve('icons.js'), data)
+  fs.writeFileSync(path.resolve('test/icons.js'), data)
 })

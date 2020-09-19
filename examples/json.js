@@ -10,7 +10,8 @@ dotenv.config()
 fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'svg',
-  pages: ['Filled'],
+  filter: component =>
+    component.pageName === 'Filled' && component.frameName === 'Action',
 }).then(async svgs => {
   const json = await Promise.all(svgs.map(svg => parse(svg.buffer.toString())))
   const data = svgs.reduce(
@@ -20,5 +21,8 @@ fetchImages({
     }),
     {}
   )
-  fs.writeFileSync(path.resolve('icons.json'), JSON.stringify(data, null, 2))
+  fs.writeFileSync(
+    path.resolve('test/icons.json'),
+    JSON.stringify(data, null, 2)
+  )
 })

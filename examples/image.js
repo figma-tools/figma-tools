@@ -10,11 +10,12 @@ dotenv.config()
 fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'jpg',
-  pages: ['Filled'],
+  filter: component =>
+    component.pageName === 'Filled' && component.frameName === 'Action',
 }).then(images => {
   images.forEach(image => {
     fs.writeFileSync(
-      path.resolve(`examples/test/${kebabCase(image.name)}.jpg`),
+      path.resolve(`test/${kebabCase(image.name)}.jpg`),
       image.buffer
     )
   })

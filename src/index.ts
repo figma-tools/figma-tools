@@ -32,17 +32,22 @@ function incrementFilterId(str) {
     .replace(/(<filter id=")([\s\S]*?)(" [\s\S]*?>)/g, replaceValue)
 }
 
+export type Component = {
+  id: string
+  name: ComponentMetadata['name']
+  description: ComponentMetadata['description']
+  pageName: string
+  frameName: string | null
+  groupName: string | null
+}
+
 export type Image = {
   buffer: Buffer
-  description: ComponentMetadata['description']
-  name: ComponentMetadata['name']
-  frameName: string
-  pageName: string
-}
+} & Component
 
 export async function fetchImages({
   fileId,
-  pages,
+  filter,
   format,
 }: {
   /** The file id to fetch images from. Located in the URL of the Figma file. */
@@ -51,33 +56,50 @@ export async function fetchImages({
   /** The returned image file format. */
   format: exportFormatOptions
 
-  /** Discrete pages to fetch images from. */
-  pages?: string[]
+  /** Filter images to fetch. Fetches all images if omitted. */
+  filter?: (component: Component) => boolean
 }) {
   const client = Figma.Client({ personalAccessToken: process.env.FIGMA_TOKEN })
   const { data } = await client.file(fileId)
   const file = processFile(data)
   const images = await Promise.all(
     file.shortcuts.pages
-      .filter(page => {
-        if (pages) {
-          const includePage = pages.includes(page.name)
-          if (includePage && (!page.shortcuts || !page.shortcuts.components)) {
-            console.log(`No components found in "${page.name}" page.`)
-            return false
-          }
-          return includePage
-        } else {
-          return true
-        }
-      })
+      .filter(page => Boolean(page.shortcuts.components))
       .map(async page => {
-        const ids = Object.keys(data.components)
+        const getParentName = (key, id) => {
+          if (page.shortcuts[key]) {
+            const entity = page.shortcuts[key].find(group =>
+              group.shortcuts.components
+                ? group.shortcuts.components.some(
+                    component => component.id === id
+                  )
+                : false
+            )
+            return entity ? entity.name : null
+          } else {
+            return null
+          }
+        }
+        const filteredComponents: Component[] = page.shortcuts.components
+          .map(component => ({
+            id: component.id,
+            name: component.name,
+            description: component.description,
+            pageName: page.name,
+            frameName: getParentName('frames', component.id),
+            groupName: getParentName('groups', component.id),
+          }))
+          .filter(component => (filter ? filter(component) : true))
+        const ids = filteredComponents.map(component => component.id)
         const chunkSize = Math.round(
           ids.length / Math.ceil(ids.length / MAX_CHUNK_SIZE)
         )
 
-        let spinner = ora(`Fetching ${page.name} sources`).start()
+        if (ids.length === 0) {
+          return null
+        }
+
+        let spinner = ora(`Fetching "${page.name}" sources`).start()
         const imageChunks = await Promise.all(
           chunk(ids, chunkSize).map(chunkIds =>
             client.fileImages(fileId, {
@@ -104,7 +126,7 @@ export async function fetchImages({
           ids.map(id => flatImages[id]).map(getImageFromSource)
         )
 
-        spinner.text = `Fetched ${page.name} images`
+        spinner.text = `Fetched "${page.name}" images`
         spinner.succeed()
 
         const imageBuffers = imageSources
@@ -122,30 +144,17 @@ export async function fetchImages({
           )
 
         return Object.entries(imageBuffers).map(([id, buffer]) => {
-          const { name, description } = data.components[id]
-          const frame =
-            page.shortcuts.frames &&
-            page.shortcuts.frames.find(frame =>
-              frame.shortcuts.components.some(component => component.id === id)
-            )
-          const group =
-            page.shortcuts.groups &&
-            page.shortcuts.groups.find(group =>
-              group.shortcuts.components.some(component => component.id === id)
-            )
+          const component = filteredComponents.find(
+            component => component.id === id
+          )
           return {
+            ...component,
             buffer,
-            description,
-            name,
-            pageName: page.name,
-            frameName: frame && frame.name,
-            groupName: group && group.name,
           }
         })
       })
   )
-  return images.reduce(
-    (flatImages, images) => [...flatImages, ...images],
-    []
-  ) as Image[]
+  return images
+    .filter(Boolean)
+    .reduce((flatImages, images) => [...flatImages, ...images], []) as Image[]
 }
