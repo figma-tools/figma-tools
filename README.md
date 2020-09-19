@@ -19,7 +19,7 @@ npm install figma-tools --dev
 a `.env` at the root of your project or as an environment variable in order for the following functions to work.
 </em>
 
-### fetchImages: ({ fileId, pages, format }) => Promise<Array<{ name, description, buffer, frameName, pageName }>>
+### fetchImages: ({ fileId, filter, format }) => Promise<Array<[Image](#types)>>
 
 Fetch components in a file and export them as images.
 
@@ -30,6 +30,22 @@ Watch a file for changes.
 ### diffFile (Coming Soon)
 
 Determine the differences between two files.
+
+## Types
+
+### Image
+
+#### name
+
+#### description
+
+#### buffer
+
+#### pageName
+
+#### frameName
+
+#### groupName
 
 ## Usage
 

@@ -56,8 +56,8 @@ export async function fetchImages({
   /** The returned image file format. */
   format: exportFormatOptions
 
-  /** Array of component names or a function that returns truthy to filter images to fetch. */
-  filter?: string[] | ((component: Component) => boolean)
+  /** Filter images to fetch. Fetches all images if omitted. */
+  filter?: (component: Component) => boolean
 }) {
   const client = Figma.Client({ personalAccessToken: process.env.FIGMA_TOKEN })
   const { data } = await client.file(fileId)
@@ -89,17 +89,17 @@ export async function fetchImages({
             frameName: getParentName('frames', component.id),
             groupName: getParentName('groups', component.id),
           }))
-          .filter(component =>
-            Array.isArray(filter)
-              ? filter.includes(component.name)
-              : filter(component)
-          )
+          .filter(component => (filter ? filter(component) : true))
         const ids = filteredComponents.map(component => component.id)
         const chunkSize = Math.round(
           ids.length / Math.ceil(ids.length / MAX_CHUNK_SIZE)
         )
 
-        let spinner = ora(`Fetching ${page.name} sources`).start()
+        if (ids.length === 0) {
+          return null
+        }
+
+        let spinner = ora(`Fetching "${page.name}" sources`).start()
         const imageChunks = await Promise.all(
           chunk(ids, chunkSize).map(chunkIds =>
             client.fileImages(fileId, {
@@ -126,7 +126,7 @@ export async function fetchImages({
           ids.map(id => flatImages[id]).map(getImageFromSource)
         )
 
-        spinner.text = `Fetched ${page.name} images`
+        spinner.text = `Fetched "${page.name}" images`
         spinner.succeed()
 
         const imageBuffers = imageSources
@@ -154,8 +154,7 @@ export async function fetchImages({
         })
       })
   )
-  return images.reduce(
-    (flatImages, images) => [...flatImages, ...images],
-    []
-  ) as Image[]
+  return images
+    .filter(Boolean)
+    .reduce((flatImages, images) => [...flatImages, ...images], []) as Image[]
 }
