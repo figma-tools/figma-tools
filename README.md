@@ -19,7 +19,7 @@ npm install figma-tools --dev
 a `.env` at the root of your project or as an environment variable in order for the following functions to work.
 </em>
 
-### fetchImages: ({ fileId, filter, format }) => Promise<Array<[Image](#types)>>
+### fetchImages: ([ImageOptions](#types)) => Promise<Array<[Image](#types)>>
 
 Fetch components in a file and export them as images.
 
@@ -32,6 +32,14 @@ Watch a file for changes.
 Determine the differences between two files.
 
 ## Types
+
+### ImageOptions
+
+#### fileId
+
+#### filter
+
+#### [image params](https://jongold.github.io/figma-js/interfaces/fileimageparams.html)
 
 ### Image
 

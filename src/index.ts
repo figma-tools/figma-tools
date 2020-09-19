@@ -45,7 +45,7 @@ export type Image = {
   buffer: Buffer
 } & Component
 
-export type Options = {
+export type ImageOptions = {
   /** The file id to fetch images from. Located in the URL of the Figma file. */
   fileId: string
 
@@ -53,7 +53,11 @@ export type Options = {
   filter?: (component: Component) => boolean
 } & Omit<Figma.FileImageParams, 'ids'>
 
-export async function fetchImages({ fileId, filter, ...options }: Options) {
+export async function fetchImages({
+  fileId,
+  filter,
+  ...options
+}: ImageOptions) {
   const client = Figma.Client({ personalAccessToken: process.env.FIGMA_TOKEN })
   const { data } = await client.file(fileId)
   const file = processFile(data)
