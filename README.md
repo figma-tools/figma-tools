@@ -102,6 +102,7 @@ fetchImages({
 const fs = require('fs')
 const path = require('path')
 const svgtojsx = require('svg-to-jsx')
+const { pascalCase } = require('case-anything')
 const { fetchImages } = require('figma-tools')
 
 fetchImages({
@@ -111,7 +112,7 @@ fetchImages({
   const jsx = await Promise.all(svgs.map(svg => svgtojsx(svg.buffer)))
   const data = svgs
     .map((svg, index) => {
-      return `export const ${pascalcase(svg.name)} = () => ${jsx[index]}`
+      return `export const ${pascalCase(svg.name)} = () => ${jsx[index]}`
     })
     .join('\n')
   fs.writeFileSync(path.resolve('icons.js'), data)
