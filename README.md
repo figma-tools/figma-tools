@@ -1,6 +1,10 @@
-<img src="images/logo.png" alt="Figma Tools" />
+<p align="center">
+  <img src="images/logo.png" alt="Figma Tools" width="400" />
+</p>
 
-Tools to help you programmatically interact with your Figma files.
+<p align="center">
+  Tools to help you programmatically interact with your Figma files.
+</p>
 
 ## Install
 
