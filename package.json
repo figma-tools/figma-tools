@@ -13,7 +13,8 @@
   "scripts": {
     "develop": "tsdx watch --target node --format cjs",
     "build": "tsdx build --target node",
-    "prepare": "tsdx build --target node"
+    "prepare": "tsdx build --target node",
+    "assets": "node examples/image.js"
   },
   "dependencies": {
     "chunk": "^0.0.3",

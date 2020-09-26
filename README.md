@@ -1,4 +1,4 @@
-# 🛠 Figma Tools
+<img src="images/logo.png" alt="Figma Tools" />
 
 Tools to help you programmatically interact with your Figma files.
 
