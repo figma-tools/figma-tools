@@ -8,14 +8,13 @@ const { fetchImages } = require('../dist/index')
 dotenv.config()
 
 fetchImages({
-  fileId: 'E6didZF0rpPf8piANHABDZ',
-  format: 'jpg',
-  filter: component =>
-    component.pageName === 'Filled' && component.frameName === 'Action',
+  fileId: 'z4b1YyN4RVdT5DHK5NPGAa',
+  format: 'png',
+  filter: component => component.name === 'Logo',
 }).then(images => {
   images.forEach(image => {
     fs.writeFileSync(
-      path.resolve(`test/${kebabCase(image.name)}.jpg`),
+      path.resolve(`images/${kebabCase(image.name)}.png`),
       image.buffer
     )
   })
