@@ -11,8 +11,12 @@ function getImageFromSource(url) {
   return new Promise((resolve, reject) => {
     https.get(url, response => {
       if (response.statusCode === 200) {
+        const body = []
         response.on('data', data => {
-          resolve(data)
+          body.push(data)
+        })
+        response.on('end', () => {
+          resolve(Buffer.concat(body))
         })
       } else {
         reject(response.statusCode)
