@@ -20,7 +20,7 @@
     "chunk": "^0.0.3",
     "dotenv": "^8.2.0",
     "figma-js": "^1.11.0",
-    "figma-transformer": "^2.0.5",
+    "figma-transformer": "^2.0.6",
     "ora": "^5.1.0"
   },
   "devDependencies": {
