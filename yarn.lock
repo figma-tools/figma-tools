@@ -2879,10 +2879,10 @@ figma-js@^1.11.0:
   dependencies:
     axios "^0.18.0"
 
-figma-transformer@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/figma-transformer/-/figma-transformer-2.0.6.tgz#3c03060b5ac41c895500fec194ede0c34dbf14a1"
-  integrity sha512-7o3Zbpdhzq4geq/mYTq+6HGyKgFXuYhvZM+bGC3TdEWIKa+offjh8xR999+gXJAlKc9A02u9YlGMA3Ir6sltDg==
+figma-transformer@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/figma-transformer/-/figma-transformer-2.0.8.tgz#b29ebd766428a990cfea1040183f615ad114ae56"
+  integrity sha512-kQzlHNFPg63FdVkAOEOcf+wrKoAdQSJOFumZXlbDikRepUuDwp/x2glKyBUOg16Ndx1d86RzgojcQmHn2z5d2g==
 
 figures@^3.0.0:
   version "3.2.0"
