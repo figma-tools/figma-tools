@@ -1,6 +1,6 @@
 {
   "name": "figma-tools",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Tools to help you programmatically interact with your Figma files.",
   "repository": "https://github.com/souporserious/figma-tools",
   "author": "Travis Arnold",
