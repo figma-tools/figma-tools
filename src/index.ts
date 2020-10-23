@@ -25,15 +25,18 @@ function getImageFromSource(url) {
   })
 }
 
-function replaceValue(_, start, middle, end) {
+function replaceValue(match, start, tag, middle, end) {
   return `${start}${filterId}_${middle}${end}`
 }
 
 function incrementFilterId(str) {
   filterId++
   return str
-    .replace(/(filter="url\(#)(.*)(\)")/g, replaceValue)
-    .replace(/(<filter id=")([\s\S]*?)(" [\s\S]*?>)/g, replaceValue)
+    .replace(/((filter|fill)="url\(#)(.*)(\)")/g, replaceValue)
+    .replace(
+      /(<(filter|linearGradient) id=")([\s\S]*?)(" [\s\S]*?>)/g,
+      replaceValue
+    )
 }
 
 export type Component = {
