@@ -27,6 +27,10 @@ a `.env` at the root of your project or as an environment variable in order for 
 
 Fetch components in a file and export them as images.
 
+### fetchStyles: (fileId) => DocumentStyles
+
+Fetch library styles used in a file.
+
 ### watchFile (Coming Soon)
 
 Watch a file for changes.
