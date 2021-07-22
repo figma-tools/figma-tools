@@ -25,6 +25,20 @@ export async function fetchStyles(fileId: string) {
       ])
   )
 
+  const effectStyles = Object.fromEntries(
+    styleEntries
+      .filter(([, node]) => node.styleType === 'EFFECT')
+      .map(([id, node]) => [
+        node.name,
+        {
+          description: node.description,
+          value: (flatTree.find((node: any) => node.styles?.effect === id) as
+            | Figma.Frame
+            | Figma.Vector).effects,
+        },
+      ])
+  )
+
   const textStyles = Object.fromEntries(
     styleEntries
       .filter(([, node]) => node.styleType === 'TEXT')
@@ -41,6 +55,7 @@ export async function fetchStyles(fileId: string) {
 
   return {
     colorStyles,
+    effectStyles,
     textStyles,
   }
 }
