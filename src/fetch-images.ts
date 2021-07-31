@@ -6,9 +6,9 @@ import ora from 'ora'
 
 import { getClient } from './get-client'
 import { getFile } from './get-file'
+import { incrementIds } from './utils'
 
 const MAX_CHUNK_SIZE = 1000
-let filterId = -1
 
 function getImageFromSource(url) {
   return new Promise((resolve, reject) => {
@@ -26,20 +26,6 @@ function getImageFromSource(url) {
       }
     })
   })
-}
-
-function replaceValue(match, start, tag, middle, end) {
-  return `${start}${filterId}_${middle}${end}`
-}
-
-function incrementFilterId(str) {
-  filterId++
-  return str
-    .replace(/((filter|fill)="url\(#)(.*)(\)")/g, replaceValue)
-    .replace(
-      /(<(filter|linearGradient) id=")([\s\S]*?)(" [\s\S]*?>)/g,
-      replaceValue
-    )
 }
 
 export type Component = {
@@ -140,7 +126,7 @@ export async function fetchImages({
         const imageBuffers = imageSources
           .map(image =>
             options.format === 'svg'
-              ? Buffer.from(incrementFilterId(image.toString()))
+              ? Buffer.from(incrementIds(image.toString()))
               : image
           )
           .reduce(
