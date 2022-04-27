@@ -23,6 +23,10 @@ npm install figma-tools --dev
 a `.env` at the root of your project or as an environment variable in order for the following functions to work.
 </em>
 
+```env
+FIGMA_TOKEN=personal-token-here
+```
+
 ### fetchImages: ([ImageOptions](#imageoptions)) => Promise<Array<[Image](#image)>>
 
 Fetch components in a file and export them as images.
