@@ -27,6 +27,22 @@ a `.env` at the root of your project or as an environment variable in order for 
 FIGMA_TOKEN=personal-token-here
 ```
 
+You must also import and initiate the `dotenv` package in order to load the `.env` file:
+
+```js
+const dotenv = require('dotenv')
+const { fetchImages } = require('figma-tools')
+
+dotenv.config()
+
+fetchImages({
+  fileId: 'E6didZF0rpPf8piANHABDZ',
+  format: 'jpg',
+}).then((images) => {
+  ...
+})
+```
+
 ### fetchImages: ([ImageOptions](#imageoptions)) => Promise<Array<[Image](#image)>>
 
 Fetch components in a file and export them as images.
@@ -77,7 +93,7 @@ const { fetchImages } = require('figma-tools')
 fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'jpg',
-}).then(images => {
+}).then((images) => {
   console.log(images)
 })
 ```
@@ -101,8 +117,8 @@ const { fetchImages } = require('figma-tools')
 fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'jpg',
-}).then(images => {
-  images.forEach(image => {
+}).then((images) => {
+  images.forEach((image) => {
     fs.writeFileSync(path.resolve(`${image.name}.jpg`), image.buffer)
   })
 })
@@ -120,8 +136,8 @@ const { fetchImages } = require('figma-tools')
 fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'svg',
-}).then(async svgs => {
-  const jsx = await Promise.all(svgs.map(svg => svgtojsx(svg.buffer)))
+}).then(async (svgs) => {
+  const jsx = await Promise.all(svgs.map((svg) => svgtojsx(svg.buffer)))
   const data = svgs
     .map((svg, index) => {
       return `export const ${pascalCase(svg.name)} = () => ${jsx[index]}`
@@ -142,8 +158,10 @@ const { fetchImages } = require('figma-tools')
 fetchImages({
   fileId: 'E6didZF0rpPf8piANHABDZ',
   format: 'svg',
-}).then(async svgs => {
-  const json = await Promise.all(svgs.map(svg => parse(svg.buffer.toString())))
+}).then(async (svgs) => {
+  const json = await Promise.all(
+    svgs.map((svg) => parse(svg.buffer.toString()))
+  )
   const data = svgs.reduce(
     (data, svg, index) => ({
       ...data,
