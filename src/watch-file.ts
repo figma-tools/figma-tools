@@ -10,7 +10,7 @@ export function watchFile(
 ) {
   let previousFile: FileResponse | null = null
 
-  setInterval(async () => {
+  const intervalId = setInterval(async () => {
     const file = await getFile(fileId, false)
 
     if (
@@ -22,4 +22,6 @@ export function watchFile(
 
     previousFile = file
   }, delay)
+
+  return () => clearInterval(intervalId)
 }
