@@ -47,17 +47,17 @@ fetchImages({
 
 Fetch components in a file and export them as images.
 
-### fetchStyles: (fileId) => DocumentStyles
+### fetchStyles: (fileId: string) => DocumentStyles
 
 Fetch library styles used in a file.
 
-### watchFile (Coming Soon)
+### watchFile (fileId: string, callback: (file: FileResponse, previousFile: FileResponse) => void, delay: number = 5000)
 
 Watch a file for changes.
 
-### diffFile (Coming Soon)
+### diffFile (fileA: FileResponse, fileB: FileResponse)
 
-Determine the differences between two files.
+Determine the differences between two files. Uses a simple wrapper around [jest-diff](https://github.com/facebook/jest/tree/main/packages/jest-diff#jest-diff).
 
 ## Types
 
