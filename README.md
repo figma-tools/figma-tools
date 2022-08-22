@@ -55,7 +55,7 @@ Fetch library styles used in a file.
 
 Watch a file for changes.
 
-### diffFile (fileA: FileResponse, fileB: FileResponse)
+### diffFiles (fileA: FileResponse, fileB: FileResponse)
 
 Determine the differences between two files. Uses a simple wrapper around [jest-diff](https://github.com/facebook/jest/tree/main/packages/jest-diff#jest-diff).
 
