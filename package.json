@@ -1,40 +1,23 @@
 {
-  "name": "figma-tools",
-  "version": "0.4.0",
-  "description": "Tools to help you programmatically interact with your Figma files.",
-  "repository": "https://github.com/souporserious/figma-tools",
-  "author": "Travis Arnold",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "name": "figsync",
+  "private": true,
+  "version": "0.0.0",
   "scripts": {
-    "build": "tsup-node src/index.ts --legacy-output --onSuccess='yarn assets'",
-    "dev": "yarn build --watch",
-    "assets": "node examples/image.js"
-  },
-  "dependencies": {
-    "chalk": "^4.1.2",
-    "chunk": "^0.0.3",
-    "dotenv": "^16.0.1",
-    "figma-js": "^1.16.0",
-    "figma-transformer": "^2.1.0",
-    "jest-diff": "^28.1.3"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test"
   },
   "devDependencies": {
-    "@types/node": "^18.7.9",
-    "case-anything": "^2.1.10",
-    "svg-to-jsx": "^1.0.4",
-    "svgson": "^5.2.1",
-    "tsup": "6.2.2",
+    "@swc/core": "^1.2.237",
+    "@swc/jest": "^0.2.22",
+    "@types/jest": "^28.1.7",
+    "@types/node": "^18.7.6",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "jest": "^28.1.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "turbo": "^1.4.3",
     "typescript": "^4.7.4"
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "es5"
   }
 }

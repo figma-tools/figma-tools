@@ -1,4 +1,7 @@
+.DS_Store
 .env
+.next
 dist
 node_modules
+out
 test
