@@ -9,10 +9,6 @@
 ## Install
 
 ```
-yarn add figma-tools --dev
-```
-
-```
 npm install figma-tools --dev
 ```
 
