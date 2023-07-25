@@ -130,9 +130,6 @@ export type ImageOptions = {
 
   /** Maximum number of retries before any individual image fetch will fail */
   fetchMaxRetries?: number
-
-  /** Does an expensive DFS on all children in the page to attach the parent name */
-  includeParentName?: boolean
 } & Omit<Figma.FileImageParams, 'ids'>
 
 export async function fetchImages({
@@ -142,7 +139,6 @@ export async function fetchImages({
   pages,
   fetchMaxRetries,
   fetchTimeout,
-  includeParentName,
   ...options
 }: ImageOptions) {
   const client = getClient()
@@ -171,23 +167,16 @@ export async function fetchImages({
           }
         }
 
-        const getElementDFS = (id: string) => {
-          const dfs = (children) => {
-            for (let child of children) {
-              if (child.id === id) {
-                return child
-              }
-              if (child.children) {
-                const foundInChildren = dfs(child.children)
-                if (foundInChildren) {
-                  return foundInChildren
-                }
-              }
+        const entityIdToNode = {}
+        const dfs = (children) => {
+          for (let child of children) {
+            entityIdToNode[child.id] = child
+            if (child.children) {
+              dfs(child.children)
             }
-            return null
           }
-          return dfs(page.children)
         }
+        dfs(page.children)
 
         const filteredComponents: Component[] = page.shortcuts.components
           .map((component) => {
@@ -200,10 +189,8 @@ export async function fetchImages({
               height: component.absoluteBoundingBox.height,
               frameName: getParentName('frames', component.id),
               groupName: getParentName('groups', component.id),
-              parentName: includeParentName
-                ? // @ts-expect-error - Figma transform doesn't know that parentId is a valid property
-                  getElementDFS(component.parentId)?.name || null
-                : null,
+              // @ts-expect-error - Figma transform doesn't know that parentId is a valid property
+              parentName: entityIdToNode[component.parentId]?.name || null,
             }
           })
           .filter((component) => (filter ? filter(component) : true))
