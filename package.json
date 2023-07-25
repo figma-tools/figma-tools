@@ -1,6 +1,6 @@
 {
   "name": "figma-tools",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Tools to help you programmatically interact with your Figma files.",
   "repository": "https://github.com/souporserious/figma-tools",
   "author": "Travis Arnold",
@@ -11,7 +11,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup-node src/index.ts --legacy-output --onSuccess='pnpm assets' --dts",
+    "build": "tsup-node src/index.ts --legacy-output --dts",
     "dev": "pnpm build --watch",
     "assets": "node examples/image.js"
   },
