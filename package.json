@@ -11,25 +11,25 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup-node src/index.ts --legacy-output --onSuccess='yarn assets'",
-    "dev": "yarn build --watch",
+    "build": "tsup-node src/index.ts --legacy-output --onSuccess='pnpm assets' --dts",
+    "dev": "pnpm build --watch",
     "assets": "node examples/image.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",
     "chunk": "^0.0.3",
-    "dotenv": "^16.0.1",
+    "dotenv": "^16.3.1",
     "figma-js": "^1.16.0",
     "figma-transformer": "^2.1.0",
-    "jest-diff": "^28.1.3"
+    "jest-diff": "^29.6.1"
   },
   "devDependencies": {
-    "@types/node": "^18.7.9",
-    "case-anything": "^2.1.10",
+    "@types/node": "^20.4.5",
+    "case-anything": "^2.1.13",
     "svg-to-jsx": "^1.0.4",
-    "svgson": "^5.2.1",
-    "tsup": "6.2.2",
-    "typescript": "^4.7.4"
+    "svgson": "^5.3.1",
+    "tsup": "7.1.0",
+    "typescript": "^5.1.6"
   },
   "prettier": {
     "printWidth": 80,
