@@ -116,7 +116,7 @@ export type ImageOptions = {
   /** The file id to fetch images from. Located in the URL of the Figma file. */
   fileId: string
 
-  /** The page name to fetch images from*/
+  /** The page name[s] to fetch images from */
   pages?: string[]
 
   /** Filter images to fetch. Fetches all images if omitted. */
