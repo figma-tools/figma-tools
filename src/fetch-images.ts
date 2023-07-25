@@ -267,7 +267,6 @@ export async function fetchImages({
         })
       })
   )
-
   return images
     .filter(Boolean)
     .reduce((flatImages, images) => [...flatImages, ...images], []) as Image[]
