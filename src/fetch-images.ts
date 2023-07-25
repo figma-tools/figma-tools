@@ -12,8 +12,8 @@ const MAX_RETRIES = 3
 const IMAGE_FETCH_TIMEOUT = 10000
 
 function getImageFromSource(
-  page,
   url,
+  page,
   retries = MAX_RETRIES,
   timeout = IMAGE_FETCH_TIMEOUT,
   onEvent?: (event: EventTypes) => void
@@ -48,7 +48,7 @@ function getImageFromSource(
           error,
         })
 
-        getImageFromSource(page, url, retries - 1, timeout)
+        getImageFromSource(url, page, retries - 1, timeout)
           .then(resolve)
           .catch(reject)
       } else {
@@ -68,7 +68,7 @@ function getImageFromSource(
           error: new Error(`Timed out fetching image from`),
         })
 
-        getImageFromSource(page, url, retries - 1, timeout)
+        getImageFromSource(url, page, retries - 1, timeout)
           .then(resolve)
           .catch(reject)
       } else {
@@ -243,10 +243,10 @@ export async function fetchImages({
         const imageSources = await Promise.all(
           ids
             .map((id) => flatImages[id])
-            .map((id) =>
+            .map((url) =>
               getImageFromSource(
+                url,
                 page,
-                id,
                 fetchMaxRetries || MAX_RETRIES,
                 fetchTimeout || IMAGE_FETCH_TIMEOUT,
                 onEvent
