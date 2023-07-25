@@ -180,20 +180,18 @@ export async function fetchImages({
         dfs(page.children)
 
         const filteredComponents: Component[] = page.shortcuts.components
-          .map((component) => {
-            return {
-              id: component.id,
-              name: component.name,
-              description: component.description,
-              pageName: page.name,
-              width: component.absoluteBoundingBox.width,
-              height: component.absoluteBoundingBox.height,
-              frameName: getParentName('frames', component.id),
-              groupName: getParentName('groups', component.id),
-              // @ts-expect-error - Figma transform doesn't know that parentId is a valid property
-              parentName: entityIdToNode[component.parentId]?.name || null,
-            }
-          })
+          .map((component) => ({
+            id: component.id,
+            name: component.name,
+            description: component.description,
+            pageName: page.name,
+            width: component.absoluteBoundingBox.width,
+            height: component.absoluteBoundingBox.height,
+            frameName: getParentName('frames', component.id),
+            groupName: getParentName('groups', component.id),
+            // @ts-expect-error - Figma transform doesn't know that parentId is a valid property
+            parentName: entityIdToNode[component.parentId]?.name || null,
+          }))
           .filter((component) => (filter ? filter(component) : true))
         const ids = filteredComponents.map((component) => component.id)
         const chunkSize = Math.round(
