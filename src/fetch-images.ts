@@ -167,6 +167,7 @@ export async function fetchImages({
           }
         }
 
+        // Map each entity id in the entire page to its node for fast lookup
         const entityIdToNode = {}
         const dfs = (children) => {
           for (let child of children) {
